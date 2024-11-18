@@ -8,6 +8,7 @@ from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, UUID 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.schema import PrimaryKeyConstraint
+from starlette.middleware.cors import CORSMiddleware
 
 Base = declarative_base()
 
@@ -148,6 +149,14 @@ def get_db():
         db.close()
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Permitir apenas o frontend
+    allow_credentials=True,
+    allow_methods=["*"],  # Permitir todos os métodos (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"],  # Permitir todos os cabeçalhos
+)
 
 @app.post("/grupo")
 async def registrar_grupo(grupo: CriarGrupoDto):
@@ -309,4 +318,4 @@ async def generate_websocket_link(grupo_id: UUID, labirinto_id: int):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000)
